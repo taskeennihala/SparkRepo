@@ -1,23 +1,24 @@
+from utils import *
+import pyspark
 from pyspark.sql import SparkSession
-from SparkRepo.src.Assignment1.utils import *
-# Installing sparksession
-spark = SparkSession.builder.appName("SparkByAssignment").getOrCreate()
 
-##csv file reading
-users_df = spark.read.csv(r"C:\Users\nihalataskeen\PycharmProjects\Spark_repo\SparkRepo\resourse\user.csv",header=True, inferSchema=True)
-transactions_df = spark.read.csv(r"C:\Users\nihalataskeen\PycharmProjects\Spark_repo\SparkRepo\resourse\transaction.csv",header=True, inferSchema=True)
 
-product_locations,products,user_product_spending = product_analysis(users_df, transactions_df)
+spark=create_session()
 
-# Results
-product_locations.show()
-products.show()
-user_product_spending.show()
+#loading user_csv  file
+df_user =read(spark,'C:/Users/Welcome/PycharmProjects/Spark_Repo/Spark_Repo/resourses/user.csv', True)
 
-# To show
-transactions_df.show()
-users_df.show()
+#loading transaction_csv file
+df_transaction = read(spark,'C:/Users/Welcome/PycharmProjects/Spark_Repo/Spark_Repo/resourses/transaction.csv', True)
 
-# To end
+#merging  user_csv and transaction_csv file
+total_df = merge(df_user,df_transaction,)
 
-spark.stop()
+# a) Count of unique locations where each product is sold.
+count_unique_locations_df=count_unique_locations(total_df)
+# b) Find out products bought by each user.
+products_bought_df=products_bought(total_df)
+# c) Total spending done by each user on each product.
+total_spending_df=total_spending(total_df)
+# stop the session
+stop(spark)
